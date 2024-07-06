@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:food_delivery/components/my_current_location.dart';
 import 'package:food_delivery/components/my_description_box.dart';
 import 'package:food_delivery/components/my_drawer.dart';
+import 'package:food_delivery/components/my_food_tile.dart';
 import 'package:food_delivery/components/my_silver_app_bar.dart';
 import 'package:food_delivery/components/my_tab_bar.dart';
 import 'package:food_delivery/models/food.dart';
+import 'package:food_delivery/models/restaurant.dart';
+import 'package:food_delivery/pages/food_page.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,13 +44,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   List<Widget> getFoodInCategory(List<Food> fullMenu) {
     return FoodCategory.values.map((category) {
+      // get category menu
       List<Food> categoryMenu = _filterMenuCategory(category, fullMenu);
       return ListView.builder(
           itemCount: categoryMenu.length,
           physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(categoryMenu[index].name),
+            return FoodTile(
+              food: categoryMenu[index],
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          FoodPage(food: categoryMenu[index]))),
             );
           });
     }).toList();
@@ -73,25 +84,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       //my current location
                       MyCurrentLocation(),
                       //description box
-                      MyDescriptionBox()
+                      const MyDescriptionBox()
                     ],
                   )),
             ];
           },
-          body: TabBarView(
-            controller: _tabController,
-            children: [
-              ListView.builder(
-                  itemCount: 5, itemBuilder: (context, idnex) => Text('data1')),
-              ListView.builder(
-                  itemCount: 5, itemBuilder: (context, idnex) => Text('data2')),
-              ListView.builder(
-                  itemCount: 5, itemBuilder: (context, idnex) => Text('data3')),
-              ListView.builder(
-                  itemCount: 5, itemBuilder: (context, idnex) => Text('data3')),
-              ListView.builder(
-                  itemCount: 5, itemBuilder: (context, idnex) => Text('data3'))
-            ],
+          body: Consumer<Restaurant>(
+            builder: (context, restaurant, child) => TabBarView(
+                controller: _tabController,
+                children: getFoodInCategory(restaurant.menu)),
           )),
     );
   }
