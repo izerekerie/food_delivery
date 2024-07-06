@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:food_delivery/components/my_button.dart';
 import 'package:food_delivery/models/food.dart';
+import 'package:food_delivery/models/restaurant.dart';
+import 'package:provider/provider.dart';
 
 class FoodPage extends StatefulWidget {
   final Food food;
@@ -20,6 +22,24 @@ class FoodPage extends StatefulWidget {
 }
 
 class _FoodPageState extends State<FoodPage> {
+  // method to add to cart
+  void addToCart(Food food, Map<Addon, bool> selectedAddons) {
+    // close the current food page to go back to menu
+
+    Navigator.pop(context);
+
+    // format the selected addons
+    List<Addon> currentSelectedAddons = [];
+
+    for (Addon addon in widget.food.availableAddons) {
+      if (widget.selectedAddons[addon] == true) {
+        currentSelectedAddons.add(addon);
+      }
+    }
+    // add to cart
+    context.read<Restaurant>().addToCart(food, currentSelectedAddons);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -27,8 +47,14 @@ class _FoodPageState extends State<FoodPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Image.asset(widget.food.imagePath),
-              //food name
+              AspectRatio(
+                aspectRatio: 12 / 9,
+                child: Image.asset(
+                  widget.food.imagePath,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              ), //food name
               Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: Column(
@@ -111,7 +137,12 @@ class _FoodPageState extends State<FoodPage> {
                   ],
                 ),
               ),
-              MyButton(text: 'Add to cart', onTap: () {})
+              MyButton(
+                  text: 'Add to cart',
+                  onTap: () => addToCart(widget.food, widget.selectedAddons)),
+              SizedBox(
+                height: 25,
+              )
             ],
           ),
         ),
