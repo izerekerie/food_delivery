@@ -177,15 +177,19 @@ class Restaurant extends ChangeNotifier {
           Addon(name: 'cold ', price: 8000),
         ]),
   ];
+  //  delivery address (which user can change/update)
+// user cart
+  final List<CartItem> _cart = [];
 
+  String _deliveryAddress = 'Kigali Height';
   //GETTERS
 
   List<Food> get menu => _menu;
   List<CartItem> get cart => _cart;
+  String get deliveryAddress => _deliveryAddress;
 
 //  OPERATIONS
-// user cart
-  final List<CartItem> _cart = [];
+
 // add to cart
   void addToCart(Food food, List<Addon> selectedAddons) {
     // check if there is item already with the same food and selected addons
@@ -254,6 +258,13 @@ class Restaurant extends ChangeNotifier {
     notifyListeners();
   }
 
+// update delivery address
+
+  void updateDeliveryAddress(String newAddress) {
+    _deliveryAddress = newAddress;
+    notifyListeners();
+  }
+
 //  HELPERS
 // generate a receipt
   String displayCartReceipt() {
@@ -277,6 +288,9 @@ class Restaurant extends ChangeNotifier {
     receipt.writeln();
     receipt.writeln("Total Items: ${getTotalItemCount()}");
     receipt.writeln("Total Price: ${_formatPrice(getTotalPrice())}");
+    receipt.writeln();
+    receipt.writeln("Delivering to: ${deliveryAddress}");
+
     return receipt.toString();
   }
 

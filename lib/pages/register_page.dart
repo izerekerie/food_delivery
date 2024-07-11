@@ -28,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (passwordController.text == confirmPasswordController.text) {
 // try creating user
       try {
-        await _authService.signInWithEmailPassword(
+        await _authService.signUpWithEmailPassword(
             emailController.text, passwordController.text);
       }
 
@@ -79,16 +79,16 @@ class _RegisterPageState extends State<RegisterPage> {
               obscureText: false,
             ),
             MyTextfield(
-              controller: emailController,
+              controller: passwordController,
               hintText: 'Password',
               obscureText: true,
             ),
             MyTextfield(
-              controller: emailController,
+              controller: confirmPasswordController,
               hintText: 'Confirm Password',
               obscureText: true,
             ),
-            MyButton(text: "Sign Up ", onTap: widget.onTap),
+            MyButton(text: "Sign Up ", onTap: register),
             const SizedBox(
               height: 25,
             ),
