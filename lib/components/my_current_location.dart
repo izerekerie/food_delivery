@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:food_delivery/models/restaurant.dart';
+import 'package:provider/provider.dart';
 
 class MyCurrentLocation extends StatelessWidget {
-  const MyCurrentLocation({super.key});
-
+  MyCurrentLocation({super.key});
+  final textController = TextEditingController();
   void openLocationSearchBox(BuildContext context) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text('Your Location'),
+              title: const Text('Your Location'),
               content: TextField(
-                decoration: const InputDecoration(hintText: 'Search address'),
+                controller: textController,
+                decoration: const InputDecoration(hintText: 'Enter address'),
               ),
               actions: [
                 MaterialButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () =>
+                      {Navigator.pop(context), textController.clear()},
+                  child: const Text('Cancel'),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    context
+                        .read<Restaurant>()
+                        .updateDeliveryAddress(textController.text);
+                    Navigator.pop(context);
+                  },
                   child: const Text('Save'),
                 )
               ],
@@ -38,9 +51,16 @@ class MyCurrentLocation extends StatelessWidget {
             child: Row(
               children: [
                 //address
-                Text('6032 Kigali '),
+                Consumer<Restaurant>(
+                    builder: (context, restaurant, child) => Text(
+                          restaurant.deliveryAddress,
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                              fontWeight: FontWeight.bold),
+                        )),
                 //dropdown menu
-                Icon(Icons.keyboard_arrow_down_rounded)
+                const Icon(Icons.keyboard_arrow_down_rounded)
               ],
             ),
           )
