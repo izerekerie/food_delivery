@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery/components/my_button.dart';
 import 'package:food_delivery/components/my_textfield.dart';
+import 'package:food_delivery/services/auth/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? onTap;
@@ -16,6 +17,39 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+
+// register method
+
+  void register() async {
+//get auth service
+
+    final _authService = AuthService();
+    // check if passwords match
+    if (passwordController.text == confirmPasswordController.text) {
+// try creating user
+      try {
+        await _authService.signInWithEmailPassword(
+            emailController.text, passwordController.text);
+      }
+
+      // display any errors
+      catch (e) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text(e.toString()),
+                ));
+      }
+    }
+    //if password don't match
+    else {
+      showDialog(
+          context: context,
+          builder: (context) => const AlertDialog(
+                title: Text("Passwords don't match!"),
+              ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
               obscureText: true,
             ),
             MyButton(text: "Sign Up ", onTap: widget.onTap),
-            SizedBox(
+            const SizedBox(
               height: 25,
             ),
             Row(
@@ -66,7 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.inversePrimary),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 4,
                 ),
                 GestureDetector(
